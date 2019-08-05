@@ -1,0 +1,41 @@
+{
+    "variables" : {
+        "region" : "us-east-1",
+        "source_ami" : "ami-0b898040803850657",
+        "aws_access_key" : "AKIA3DTCIKOAMADK23QO",
+        "aws_secret_key" : "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"
+    },
+    "builders" : [
+        {
+            "type" : "amazon-ebs",
+            "access_key": "{{user `aws_access_key`}}",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "profile" : "default",
+            "region" : "{{user `region`}}",
+            "instance_type" : "t2.micro",
+            "source_ami" : "{{user `source_ami`}}",
+            "ssh_username" : "ec2-user",
+            "ami_name" : "jenkins-slave",
+            "ami_description" : "Amazon Linux Image for Jenkins Slave",
+            "run_tags" : {
+                "Name" : "packer-builder-docker"
+            },
+            "tags" : {
+                "Tool" : "Packer",
+                "Author" : "Pramod"
+            }
+        }
+    ],
+    "provisioners" : [
+        {
+            "type" : "file",
+            "source" : "./telegraf.conf",
+            "destination" : "/tmp/telegraf.conf"
+        },
+        {
+            "type" : "shell",
+            "script" : "./setup.sh",
+            "execute_command" : "sudo -E -S sh '{{ .Path }}'"
+        }
+    ]
+}
